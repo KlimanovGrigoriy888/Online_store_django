@@ -1,0 +1,57 @@
+[
+{
+    "model": "catalog.product",
+    "pk": 1,
+    "fields": {
+        "name": "Samsung Galaxy C23 Ultra",
+        "description": "256GB, Серый цвет, 200MP камера",
+        "picture": "",
+        "category": 1,
+        "purchase_price": 180000,
+        "created_at": "2026-05-24",
+        "updated_at": "2026-05-24"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 3,
+    "fields": {
+        "name": "Xiaomi Redmi Note 11",
+        "description": "1024GB, Синий",
+        "picture": "",
+        "category": 1,
+        "purchase_price": 31000,
+        "created_at": "2026-05-24",
+        "updated_at": "2026-05-24"
+    }
+},
+{
+    "model": "catalog.product",
+    "pk": 4,
+    "fields": {
+        "name": "\"55\" QLED 4K",
+        "description": "Фоновая подсветка",
+        "picture": "",
+        "category": 2,
+        "purchase_price": 140000,
+        "created_at": "2026-05-24",
+        "updated_at": "2026-05-24"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 1,
+    "fields": {
+        "name": "Смартфоны",
+        "description": "Смартфоны, как средство не только коммуникации, но и получение дополнительных функций для удобства жизни"
+    }
+},
+{
+    "model": "catalog.category",
+    "pk": 2,
+    "fields": {
+        "name": "Телевизоры",
+        "description": "Современный телевизор, который позволяет наслаждаться просмотром, станет вашим другом и помощником"
+    }
+}
+]
