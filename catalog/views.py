@@ -19,15 +19,16 @@ def view_home(request):
     products = Product.objects.all()
     context = {'products': products}
 
-    # Получаем все отсортированные по дате создания последние 5 продуктов из класса Product
+    # Получаем все отсортированные по дате создания последние 5 продуктов из класса Product для вывода в консоль
     latest_products = Product.objects.order_by('-created_at')[:5]
     for product in latest_products:
         print(product.name)
+    # Рендерим шаблон с контекстом со всеми продуктами согласно задания
     return render(request, 'catalog/home.html', context)
 
 
-# Контроллер POST запроса получения обратной связи со страницы и рендеринга страницы contact.html
-# И контроллер GET запроса и рендеринга страницы contact.html если не POST запрос
+# Контроллер POST запроса получения обратной связи со страницы и контроллер GET запроса и рендеринга страницы
+# contact.html если не POST запрос
 def contact(request):
     if request.method == 'POST':
         # Если метод запроса сервера POST получаем данные с web страницы
@@ -40,7 +41,8 @@ def contact(request):
     return render(request, 'catalog/contacts.html')
 
 
-# И контроллер GET запроса и рендеринга страницы product_detail.html с контекстом по id продукта
+# Контроллер GET запроса и рендеринга страницы product_detail.html с контекстом по заданному
+# id продукта в качестве аргумента функции
 def product_detail(request, product_id):
     # используем get_object_or_404 вместо падения сервера покажет пользователю стандартную
     # страницу «404: Страница не найдена».
@@ -49,6 +51,8 @@ def product_detail(request, product_id):
     return render(request, 'catalog/product_detail.html', context)
 
 
+# Контроллер POST запроса получения обратной связи со страницы, создания объекта класса Product на основе полученных
+# данных и контроллер GET запроса и рендеринга страницы product_input.html если не POST запрос
 def product_input_form(request):
     # если метод POST, то получаем данные с формы product_input.html
     if request.method == 'POST':
