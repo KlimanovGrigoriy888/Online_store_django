@@ -13,8 +13,9 @@
     <nav class="ms-5">
         <a class="p-2 btn btn-outline-primary" href="/catalog/home/">Каталог</a>
         <a class="p-2 btn btn-outline-primary" href="/catalog/contacts/">Контакты</a>
+        <a class="p-2 btn btn-outline-primary" href="/catalog/product_input/">Создать новый продукт</a>
         <!-- Перенаправляет в меню на товар с введеным ID товара -->
-        <form method="post" action="{% url 'catalog:home' %}" class="d-flex mb-0">
+        <form method="post" action="{% url 'catalog:home' %}" class="d-flex mt-2 align-items mb-0">
             {% csrf_token %}
             <input class="form-control me-2" type="number" name="product_id" placeholder="Введите ID товара" required
                    style="width: 150px;">
