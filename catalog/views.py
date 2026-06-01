@@ -12,8 +12,8 @@ def view_home(request):
         if product_id and product_id.isdigit():
             # Ищем продукт в базе. Если не нашли — выдаст 404. Этот код подсказал ИИ.
             product = get_object_or_404(Product, id=int(product_id))
-            # Рендерим страницу товара, передавая найденный объект
-            return render(request, 'catalog/product_detail.html', {'product': product})
+            # Перенаправляем к контроллеру product_detail товара, передавая искомый product_id
+            return redirect('catalog:product_detail', product_id=product.id)
 
     # Получаем все продукты из класса Product
     products = Product.objects.all()
@@ -41,7 +41,9 @@ def contact(request):
 
 # И контроллер GET запроса и рендеринга страницы product_detail.html с контекстом по id продукта
 def product_detail(request, product_id):
-    product = Product.objects.get(id=product_id)
+    # используем get_object_or_404 вместо падения сервера покажет пользователю стандартную
+    # страницу «404: Страница не найдена».
+    product = get_object_or_404(Product, id=product_id)
     context = {'product': product}
     return render(request, 'catalog/product_detail.html', context)
 
