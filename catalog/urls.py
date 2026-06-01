@@ -1,5 +1,4 @@
 from django.urls import path
-from mypy.types import names
 
 from . import views
 from catalog.apps import CatalogConfig

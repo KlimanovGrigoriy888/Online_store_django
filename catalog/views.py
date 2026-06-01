@@ -17,7 +17,7 @@ def view_home(request):
 
     # Получаем все продукты из класса Product
     products = Product.objects.all()
-    context = { 'products': products}
+    context = {'products': products}
 
     # Получаем все отсортированные по дате создания последние 5 продуктов из класса Product
     latest_products = Product.objects.order_by('-created_at')[:5]
@@ -38,6 +38,7 @@ def contact(request):
         print(f"Спасибо, {name}! Ваше телефон {phone} и сообщение {message} получены.")
         return HttpResponse(f"Спасибо, {name}! Ваше телефон {phone} и сообщение {message} получены.")
     return render(request, 'catalog/contacts.html')
+
 
 # И контроллер GET запроса и рендеринга страницы product_detail.html с контекстом по id продукта
 def product_detail(request, product_id):
