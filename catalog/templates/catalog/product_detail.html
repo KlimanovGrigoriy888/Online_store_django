@@ -1,0 +1,36 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %} Информация о продукте {% endblock %}
+
+{% block content %}
+{% include 'catalog/header.html'%}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mb-4 box-shadow">
+                <div class="card-header text-center">
+                    <h4 class="my-0 font-weight-normal">{{ product.name }}</h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if product.picture %}
+                            <img src="{{ product.picture.url }}" class="img-fluid rounded" alt="{{ product.name }}" style="max-height: 400px;">
+                        {% else %}
+                            <div class="p-5 bg-light text-muted rounded">Нет изображения товара</div>
+                        {% endif %}
+                    </div>
+                    <ul class="list-unstyled mt-3 mb-4 text-start m-3">
+                        <li class="mb-2">Описание продукта: {{product.description}}</li>
+                        <li class="mb-2">Цена: {{product.purchase_price }}</li>
+                    </ul>
+                     <div class="d-flex justify-content-between m-3">
+                        <!-- Кнопка возврата назад в каталог -->
+                        <a href="{% url 'catalog:home' %}" class="btn btn-lg btn-outline-secondary">Назад в каталог</a>
+                        <button type="button" class="btn btn-lg btn-primary">Добавить в корзину</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

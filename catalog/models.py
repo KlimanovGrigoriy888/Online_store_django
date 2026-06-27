@@ -19,14 +19,15 @@ class Category(models.Model):
 class Product(models.Model):
     """Класс создания продукта"""
 
-    name = models.CharField(max_length=150, verbose_name='Наименование')
-    description = models.TextField(verbose_name='Описание')
+    name = models.CharField(max_length=150, verbose_name='Наименование', help_text="Укажите наименование продукта", )
+    description = models.TextField(verbose_name='Описание', help_text="Напишите описание продукта", )
     picture = models.ImageField(upload_to='photos/', verbose_name='Изображение', blank=True, null=True,
                                 help_text="Загрузите изображение продукта", )
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория', related_name='product')
-    purchase_price = models.IntegerField(default=0, verbose_name='Цена за покупку')
-    created_at = models.DateField(auto_now_add=True, verbose_name='Дата создания')
-    updated_at = models.DateField(auto_now=True, verbose_name='дата последнего изменения')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория', related_name='product',
+                                 help_text="Укажите категорию продукта", )
+    purchase_price = models.IntegerField(default=0, verbose_name='Цена за покупку', )
+    created_at = models.DateField(auto_now_add=True, verbose_name='Дата создания', )
+    updated_at = models.DateField(auto_now=True, verbose_name='дата последнего изменения', )
 
     def __str__(self):
         return f'{self.name} {self.description} {self.category}'
