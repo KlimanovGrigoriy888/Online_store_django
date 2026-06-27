@@ -24,9 +24,13 @@
                         <li class="mb-2">Цена: {{product.purchase_price }}</li>
                     </ul>
                      <div class="d-flex justify-content-between m-3">
-                        <!-- Кнопка возврата назад в каталог -->
-                        <a href="{% url 'catalog:home' %}" class="btn btn-lg btn-outline-secondary">Назад в каталог</a>
-                        <button type="button" class="btn btn-lg btn-primary">Добавить в корзину</button>
+                         <!-- Кнопка редактирования продукта -->
+                         <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-lg btn-outline-secondary">Редактировать</a>
+                         <!-- Кнопка возврата назад в каталог -->
+                         <a href="{% url 'catalog:products_list' %}" class="btn btn-lg btn-outline-secondary">Назад в каталог</a>
+                         <!-- Кнопка редактирования продукта -->
+                         <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-lg btn-danger">Удалить товар</a>
+                         <button type="button" class="btn btn-lg btn-primary">Добавить в корзину</button>
                     </div>
                 </div>
             </div>
