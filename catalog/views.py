@@ -1,9 +1,9 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views import View
 
-from .models import Product, Category, Contact
+from .models import Product
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView, DetailView, DeleteView
 
@@ -74,7 +74,7 @@ class ProductCreateView(CreateView):
     """Класс создания продукта."""
     model = Product
     # Указываем поля модели, которые будут в HTML-форме
-    fields = ['name','purchase_price', 'description', 'category', 'picture']
+    fields = ['name', 'purchase_price', 'description', 'category', 'picture',]
     # Новая страница с формой
     template_name = 'catalog/product_form.html'
     # Перенаправляем пользователя после успешного создания товара

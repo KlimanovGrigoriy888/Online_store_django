@@ -29,7 +29,6 @@ class BlogDetailView(DetailView):
     # Контекст передаваемый в шаблон
     context_object_name = 'blog'
 
-
     def get_object(self, queryset=None):
         self.object = super().get_object(queryset)
         self.object.views_count += 1

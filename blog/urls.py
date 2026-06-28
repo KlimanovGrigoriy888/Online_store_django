@@ -3,8 +3,8 @@ from .apps import BlogConfig
 from .views import BlogListView, BlogDetailView, BlogCreateView, BlogUpdateView, BlogDeleteView
 
 
-# Создаем пространство имен с названием blog/ для страниц contacts.html и products_list.html, не забыть включить в путь в
-# директории config/urls.py. Для этого используем класс CatalogConfig для вызова имени директории в catalog.apps
+# Создаем пространство имен с названием blog/ для страниц contacts.html и products_list.html, не забыть включить в путь
+# в директории config/urls.py. Для этого используем класс CatalogConfig для вызова имени директории в catalog.apps
 app_name = BlogConfig.name
 
 

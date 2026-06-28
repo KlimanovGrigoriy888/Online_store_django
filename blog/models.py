@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class BlogEntry(models.Model):
     """Класс создания блога"""
 
@@ -18,4 +19,3 @@ class BlogEntry(models.Model):
         verbose_name = 'Блоговая запись'
         verbose_name_plural = 'Блоговые записи'
         ordering = ['created_at', ]
-
