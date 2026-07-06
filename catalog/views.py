@@ -1,88 +1,101 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Product, Category
+from django.urls import reverse_lazy
+from django.views import View
+
+from .models import Product
+from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic import ListView, DetailView, DeleteView
 
 
-# Контроллер GET запроса и рендеринга страницы home.html и рендеринга product_detail.html по POST запросу ID продукта
-def view_home(request):
-    if request.method == 'POST':
-        # Получаем product_id из POST-запроса формы
+class ProductListView(ListView):
+    """Класс просмотра всех продуктов."""
+    model = Product
+    # Новый шаблон страницы для просмотра всех продуктов
+    template_name = 'catalog/products_list.html'
+    # Контекст передаваемый в шаблон
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        """Здесь выводим в консоль 5 последних товаров"""
+        queryset = super().get_queryset()
+
+        # Получаем все отсортированные по дате создания последние 5 продуктов из класса Product для вывода в консоль
+        latest_products = Product.objects.order_by('-created_at')[:5]
+        print("--- Последние 5 товаров в БД ---")
+        for item in latest_products:
+            print(item.name)
+
+        return queryset
+
+    def post(self, request, *args, **kwargs):
+        """Этот метод перехватывает POST-запрос от формы ввода ID с базового шаблона. Подсказал ИИ"""
+
         product_id = request.POST.get('product_id')
 
         if product_id and product_id.isdigit():
-            # Ищем продукт в базе. Если не нашли — выдаст 404. Этот код подсказал ИИ.
-            product = get_object_or_404(Product, id=int(product_id))
-            # Перенаправляем к контроллеру product_detail товара, передавая искомый product_id
-            return redirect('catalog:product_detail', product_id=product.id)
+            # Делаем редирект на страницу деталей по запрашиваемому product_id в форме, ищет через адрес и pk через
+            # адрес указанный в urls.py адрес 'product/<int:pk>/'
+            return redirect('catalog:product_detail', pk=int(product_id))
 
-    # Получаем все продукты из класса Product
-    products = Product.objects.all()
-    context = {'products': products}
-
-    # Получаем все отсортированные по дате создания последние 5 продуктов из класса Product для вывода в консоль
-    latest_products = Product.objects.order_by('-created_at')[:5]
-    for product in latest_products:
-        print(product.name)
-    # Рендерим шаблон с контекстом со всеми продуктами согласно задания
-    return render(request, 'catalog/home.html', context)
+        return redirect('catalog:products_list')
 
 
-# Контроллер POST запроса получения обратной связи со страницы и контроллер GET запроса и рендеринга страницы
-# contact.html если не POST запрос
-def contact(request):
-    if request.method == 'POST':
-        # Если метод запроса сервера POST получаем данные с web страницы
+class ContactView(View):
+    """Класс-контроллер для отображения страницы контактов и обработки формы."""
+
+    def get(self, request):
+        """Рендеринг страницы контактов при обычном переходе (GET-запрос)."""
+        return render(request, 'catalog/contacts.html')
+
+    def post(self, request):
+        """Получение данных обратной связи из формы (POST-запрос)."""
         name = request.POST.get('name')
         phone = request.POST.get('phone')
         message = request.POST.get('message')
-        # Возвращаем простой ответ
-        print(f"Спасибо, {name}! Ваше телефон {phone} и сообщение {message} получены.")
-        return HttpResponse(f"Спасибо, {name}! Ваше телефон {phone} и сообщение {message} получены.")
-    return render(request, 'catalog/contacts.html')
+
+        # Выводим в консоль, как у вас и было изначально
+        print(f"Спасибо, {name}! Ваш телефон {phone} и сообщение '{message}' получены.")
+
+        # Возвращаем простой HTTP-ответ на экран
+        return HttpResponse(f"Спасибо, {name}! Ваш телефон {phone} и сообщение '{message}' получены.")
 
 
-# Контроллер GET запроса и рендеринга страницы product_detail.html с контекстом по заданному
-# id продукта в качестве аргумента функции
-def product_detail(request, product_id):
-    # используем get_object_or_404 вместо падения сервера покажет пользователю стандартную
-    # страницу «404: Страница не найдена».
-    product = get_object_or_404(Product, id=product_id)
-    context = {'product': product}
-    return render(request, 'catalog/product_detail.html', context)
+class ProductDetailView(DetailView):
+    """Класс просмотра деталей продукта."""
+    model = Product
+    # Новая страница с формой
+    template_name = 'catalog/product_detail.html'
+    # Контекст передаваемый в шаблон
+    context_object_name = 'product'
 
 
-# Контроллер POST запроса получения обратной связи со страницы, создания объекта класса Product на основе полученных
-# данных и контроллер GET запроса и рендеринга страницы product_input.html если не POST запрос
-def product_input_form(request):
-    # если метод POST, то получаем данные с формы product_input.html
-    if request.method == 'POST':
-        # 1. Получаем текстовые данные из POST
-        name = request.POST.get('name')
-        purchase_price = request.POST.get('purchase_price')
-        description = request.POST.get('description')
+class ProductCreateView(CreateView):
+    """Класс создания продукта."""
+    model = Product
+    # Указываем поля модели, которые будут в HTML-форме
+    fields = ['name', 'purchase_price', 'description', 'category', 'picture',]
+    # Новая страница с формой
+    template_name = 'catalog/product_form.html'
+    # Перенаправляем пользователя после успешного создания товара
+    success_url = reverse_lazy('catalog:products_list')
 
-        # Получаем ID категории, которую выбрал пользователь в выпадающем списке
-        category_id = request.POST.get('category')
 
-        # Находим эту категорию в базе данных
-        category = Category.objects.get(id=category_id)
+class ProductUpdateView(UpdateView):
+    """Класс обновления данных продукта."""
+    model = Product
+    # Указываем поля модели, которые будут в HTML-форме
+    fields = ['name', 'purchase_price', 'description', 'category', 'picture']
+    # Новая страница с формой
+    template_name = 'catalog/product_form.html'
+    # Перенаправляем пользователя после успешного создания товара
+    success_url = reverse_lazy('catalog:products_list')
 
-        # 2. Получаем картинку берем из FILES
-        picture = request.FILES.get('picture')
 
-        # 3. Создаем и сохраняем новый продукт в базу данных
-        new_product = Product.objects.create(
-            name=name,
-            purchase_price=purchase_price,
-            description=description,
-            picture=picture,
-            category=category  # Передаем объект категории
-        )
-
-        # 4. Перенаправляем пользователя на главную страницу каталога чтобы он сразу увидел добавленный товар в списке
-        return redirect('catalog:home')
-
-    # Для GET-запроса: забираем ВСЕ категории из базы данных
-    categories = Category.objects.all()
-
-    return render(request, 'catalog/product_input.html', {'categories': categories})
+class ProductDeleteView(DeleteView):
+    """Класс просмотра удаления продукта."""
+    model = Product
+    # Новая страница с формой
+    template_name = 'catalog/product_confirm_delete.html'
+    # Перенаправляем пользователя после успешного удаления товара
+    success_url = reverse_lazy('catalog:products_list')

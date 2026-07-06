@@ -34,21 +34,28 @@
                     <h4 class="my-0 font-weight-normal">Свяжитесь с нами</h4>
                 </div>
                 <div class="card-body">
-                    <form method="post" action="" class="form-floating">
+                    <form method="post" action="">
                         {% csrf_token %}
-                        <div class="mb-3">
+
+                        <div class="mb-3 text-start">
                             <label for="name">Имя</label>
-                            <input type="text" name="name" class="form-control" id="name" placeholder="Ваше имя" required>
+                            <input type="text" name="name" class="form-control" id="name" required>
                         </div>
-                        <div class="mb-3">
+
+                        <div class="mb-3 text-start">
                             <label for="phone">Телефон</label>
-                            <input type="text" name="phone" class="form-control" id="phone" placeholder="Контактный телефон" required>
+                            <input type="tel" name="phone" class="form-control" id="phone" required>
                         </div>
-                        <div class="mb-3">
+
+                        <div class="mb-3 text-start">
                             <label for="message">Сообщение</label>
-                            <textarea type="text" name="message" class="form-control" id="message" placeholder="Ваше сообщение" required></textarea>
+                            <!-- name="email" вместо name="message" -->
+                            <textarea name="message" class="form-control" rows="3" id="message" required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-lg btn-block btn-outline-primary">Отправить</button>
+                        {% if error_message %}
+                        <div class="alert alert-danger">{{ error_message }}</div>
+                        {% endif %}
+                        <button type="submit" class="btn btn-primary">Отправить контакт</button>
                     </form>
                 </div>
             </div>

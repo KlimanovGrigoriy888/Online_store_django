@@ -1,0 +1,30 @@
+<!-- blog_confirm_delete.html -->
+{% extends 'blog/base.html' %}
+
+{% block title %} Удаление статьи — {{ blogentry.title }}{% endblock %}
+
+{% block content %}
+{% include 'blog/header.html' %}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card border-danger box-shadow">
+            <div class="card-header bg-danger text-white text-center">
+                <h4 class="my-0 font-weight-normal">Подтверждение удаления</h4>
+            </div>
+            <div class="card-body text-center">
+                <p class="fs-5 mb-4">Вы уверены, что хотите удалить статью <br><strong>"{{ blogentry.title }}"</strong>?</p>
+                 <!-- Добавили точный action для отправки POST-запроса -->
+                <form method="post" action="{% url 'blog:blog_delete' blogentry.pk %}">
+                    {% csrf_token %}
+                    <!-- Кнопка подтверждения удаления -->
+                    <button type="submit" class="btn btn-lg btn-danger me-2">Да, удалить</button>
+
+                    <!-- Кнопка отмены возвращает на страницу деталей этого же товара -->
+                    <a href="{% url 'blog:blog_detail' blogentry.pk %}" class="btn btn-lg btn-secondary">Отмена</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

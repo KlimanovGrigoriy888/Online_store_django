@@ -1,3 +1,4 @@
+<!-- base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,18 +10,10 @@
 </head>
 <body>
 <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
-    <h5 class="my-0 mr-md-auto font-weight-normal">Online store</h5>
+    <h5 class="my-0 mr-md-auto font-weight-normal">Записи блогов</h5>
     <nav class="ms-5">
-        <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:products_list' %}">Каталог</a>
-        <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:contacts' %}" >Контакты</a>
-        <a class="p-2 btn btn-outline-primary" href="{% url 'catalog:product_create' %}" >Создать новый продукт</a>
-        <!-- Перенаправляет в меню на товар с введеным ID товара -->
-        <form method="post" action="{% url 'catalog:products_list' %}" class="d-flex mt-2 align-items mb-0">
-            {% csrf_token %}
-            <input class="form-control me-2" type="number" name="product_id" placeholder="Введите ID товара" required
-                   style="width: 150px;">
-            <button class="btn btn-primary" type="submit">Показать</button>
-        </form>
+        <a class="p-2 btn btn-outline-primary" href="{% url 'blog:blog_list' %}">Список записей блогов</a>
+        <a class="p-2 btn btn-outline-primary" href="{% url 'blog:blog_create' %}">Создать блоговую запись</a>
     </nav>
 </div>
 <!-- начало тела -->
@@ -30,7 +23,7 @@
     <footer class="pt-4 my-md-5 pt-md-5 border-top">
         <div class="row">
             <div class="col-12 col-md">
-                Online store
+                Blogs lists
                 <small class="d-block mb-3 text-muted">&copy; 2026</small>
             </div>
             <div class="col-6 col-md">

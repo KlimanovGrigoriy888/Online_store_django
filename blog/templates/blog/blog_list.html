@@ -1,0 +1,47 @@
+<!-- blog_list.html -->
+{% extends 'blog/base.html' %}
+
+{% block title %} Список блоговых записей {% endblock %}
+
+{% block content %}
+{% include 'blog/header.html' %}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Блоговые записи</h1>
+        <!-- Ссылка на создание новой статьи -->
+        <a href="{% url 'blog:blog_create' %}" class="btn btn-success">Написать статью</a>
+    </div>
+
+    <div class="row">
+        {% for blog in blogs %}
+            <div class="col-md-4">
+                <div class="card mb-4 box-shadow">
+                    {% if blog.preview %}
+                        <img src="{{ blog.preview.url }}" class="card-img-top" alt="{{ blog.title }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light text-muted text-center py-5" style="height: 200px;">Нет изображения</div>
+                    {% endif %}
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">{{ blog.title }}</h5>
+                        <p class="card-text text-muted small">{{ blog.content|truncatechars:100 }}</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">👁 Просмотров: {{ blog.views_count }}</span>
+                            <div class="btn-group">
+                                <a href="{% url 'blog:blog_detail' blog.pk %}" class="btn btn-sm btn-outline-primary">Читать</a>
+                                <a href="{% url 'blog:blog_update' blog.pk %}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center text-muted py-5">
+                <h3>В блоге пока нет ни одной записи.</h3>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

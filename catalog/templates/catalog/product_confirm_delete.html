@@ -1,0 +1,31 @@
+<!-- product_confirm_delete.html -->
+{% extends 'catalog/base.html' %}
+
+{% block title %} Удаление продукта — {{ product.name }} {% endblock %}
+
+{% block content %}
+{% include 'catalog/header.html' %}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card border-danger box-shadow">
+            <div class="card-header bg-danger text-white text-center">
+                <h4 class="my-0 font-weight-normal">Подтверждение удаления</h4>
+            </div>
+            <div class="card-body text-center">
+                <!-- Заменили MyModel на реальное имя продукта -->
+                <p class="fs-5 mb-4">Вы уверены, что хотите удалить товар <br><strong>"{{ product.name }}"</strong>?</p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <!-- Кнопка подтверждения удаления -->
+                    <button type="submit" class="btn btn-lg btn-danger me-2">Да, удалить</button>
+
+                    <!-- Кнопка отмены возвращает на страницу деталей этого же товара -->
+                    <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-lg btn-secondary">Отмена</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
