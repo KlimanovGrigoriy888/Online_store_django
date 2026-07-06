@@ -36,6 +36,7 @@ class BlogDetailView(DetailView):
 
         # Проверяем: если это ровно 100-й просмотр
         if self.object.views_count == 12:
+            # Пересылка на email при срабатывании условия счетчика
             send_mail(
                 subject='Поздравляем с достижением!',
                 message=f'Ваша статья "{self.object.title}" набрала 100 просмотров! Отличный результат!',
@@ -65,8 +66,9 @@ class BlogUpdateView(UpdateView):
     fields = ['title', 'content', 'preview', 'is_published']
     # Новая страница с формой
     template_name = 'blog/blog_form.html'
-    # Перенаправляем пользователя после успешного создания товара
-    success_url = reverse_lazy('blog:blog_detail')
+    # # Перенаправляем пользователя после успешного создания товара не работает, необходимо применить
+    # # get_success_url(self):
+    # success_url = reverse_lazy('blog:blog_detail')
 
     def get_success_url(self):
         """Динамически перенаправляет на страницу просмотра измененной статьи."""
