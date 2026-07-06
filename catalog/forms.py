@@ -1,5 +1,5 @@
 import re
-
+import os
 from django import forms
 from django.core.exceptions import ValidationError
 from django.forms.utils import ErrorList
@@ -14,6 +14,7 @@ class BootstrapErrorList(ErrorList):
         # Добавляем класс 'text-danger' (красный текст) или 'alert alert-danger'
         self.error_class = 'text-danger small d-block mt-1'
 
+
 class ProductForm(forms.ModelForm):
     # Список запретных слов объявленных во множестве
     BAD_WORDS = {'казино',
@@ -25,6 +26,7 @@ class ProductForm(forms.ModelForm):
                  'обман',
                  'полиция',
                  'радар'}
+
     class Meta:
         model = Product
         fields = ['name', 'purchase_price', 'description', 'category', 'picture', ]
@@ -105,9 +107,10 @@ class ProductForm(forms.ModelForm):
         # Перебираем поля циклом
         for field_name in field_to_check:
             # Извлекаем поле из cleaned_data
-            text= cleaned_data.get(field_name)
+            text = cleaned_data.get(field_name)
+
             if not text:
-                continue #  Пропуск если поле пустое или не прошло базовую валидацию
+                continue  # Пропуск если поле пустое или не прошло базовую валидацию
             # используем фильтр для извлечения только слов без точек, запятых и пробелов, слова приводим к нижнему
             # регистру
             words_in_text = re.findall(r'\b\w+\b', text.lower())
