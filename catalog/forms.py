@@ -96,7 +96,7 @@ class ProductForm(forms.ModelForm):
 
         return picture
 
-    # Метод валидации полей name и description
+    # Метод валидации полей name и description на запретные слова
     def clean(self):
         # получаем очищенные данные всей формы
         cleaned_data = super().clean()
