@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.urls import reverse_lazy
 from django.views import View
 
+from .forms import ProductForm
 from .models import Product
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView, DetailView, DeleteView
@@ -74,7 +75,9 @@ class ProductCreateView(CreateView):
     """Класс создания продукта."""
     model = Product
     # Указываем поля модели, которые будут в HTML-форме
-    fields = ['name', 'purchase_price', 'description', 'category', 'picture',]
+    # fields = ['name', 'purchase_price', 'description', 'category', 'picture',]
+    # Для получения данных с входной формы HTML шаблона указываем класс формы для работы через формы
+    form_class = ProductForm
     # Новая страница с формой
     template_name = 'catalog/product_form.html'
     # Перенаправляем пользователя после успешного создания товара
@@ -85,7 +88,9 @@ class ProductUpdateView(UpdateView):
     """Класс обновления данных продукта."""
     model = Product
     # Указываем поля модели, которые будут в HTML-форме
-    fields = ['name', 'purchase_price', 'description', 'category', 'picture']
+    # fields = ['name', 'purchase_price', 'description', 'category', 'picture']
+    # Для получения данных с входной формы HTML шаблона указываем класс формы для работы через формы
+    form_class = ProductForm
     # Новая страница с формой
     template_name = 'catalog/product_form.html'
     # Перенаправляем пользователя после успешного создания товара

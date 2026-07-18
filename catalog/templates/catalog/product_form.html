@@ -23,6 +23,8 @@
                 проигнорирует файл картинки и передаст на сервер только текстовые поля.-->
                 <form method="post" action="" enctype="multipart/form-data" class="form-floating">
                     {% csrf_token %}
+
+                    {{form.non_field_errors}}
                     <!-- замена на форму Django View: выведет все поля модели, обернутые в теги <p> -->
                     {{form.as_p}}
 
