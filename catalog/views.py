@@ -1,3 +1,4 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.urls import reverse_lazy
@@ -71,7 +72,7 @@ class ProductDetailView(DetailView):
     context_object_name = 'product'
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     """Класс создания продукта."""
     model = Product
     # Указываем поля модели, которые будут в HTML-форме
@@ -84,7 +85,7 @@ class ProductCreateView(CreateView):
     success_url = reverse_lazy('catalog:products_list')
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     """Класс обновления данных продукта."""
     model = Product
     # Указываем поля модели, которые будут в HTML-форме
@@ -97,7 +98,7 @@ class ProductUpdateView(UpdateView):
     success_url = reverse_lazy('catalog:products_list')
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     """Класс просмотра удаления продукта."""
     model = Product
     # Новая страница с формой
