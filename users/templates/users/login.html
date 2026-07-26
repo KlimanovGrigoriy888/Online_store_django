@@ -1,0 +1,24 @@
+<!-- users/login.html -->
+{% extends 'catalog/base.html' %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+{% include 'catalog/header.html' %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card mb-5 box-shadow">
+            <div class="card-header text-center">
+                <h4 class="my-0 font-weight-normal">Вход на сайт </h4>
+            </div>
+            <div class="card-body">
+                <form method="post" action="" enctype="multipart/form-data" class="form-floating">>
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Войти</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

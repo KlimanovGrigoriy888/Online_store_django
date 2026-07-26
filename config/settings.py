@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 
-from django.conf.global_settings import MEDIA_URL, MEDIA_ROOT
+from django.conf.global_settings import MEDIA_URL, MEDIA_ROOT, AUTH_USER_MODEL, SERVER_EMAIL
 from dotenv import load_dotenv
 import os
 
@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 
     "catalog",
-    "blog"
+    "blog",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -147,3 +148,23 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # В режиме разработки письма будут печататься прямо в консоль терминала
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DEFAULT_FROM_EMAIL = 'webmaster@localhost'
+
+# Указываем кастомную модель пользователя
+AUTH_USER_MODEL = 'users.CustomUser'
+
+# Настройка почтового сервера
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = os.getenv('YOUR_EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('YOUR_EMAIL_HOST_PASSWORD')
+
+#  Для получения писем об ошибках сайта для Яндекс и mail
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Указываем путь перенаправления если пользователь не авторизован, при подключении через контроллер использующий
+# миксин LoginRequiredMixin
+LOGIN_URL = 'users:login'
