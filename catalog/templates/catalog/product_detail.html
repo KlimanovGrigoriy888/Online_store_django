@@ -25,11 +25,15 @@
                     </ul>
                      <div class="d-flex justify-content-between m-3">
                          <!-- Кнопка редактирования продукта -->
+                         {% if user == product.owner or perms.catalog.can_unpublish_product %}
                          <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-lg btn-outline-secondary">Редактировать</a>
+                         {% endif %}
                          <!-- Кнопка возврата назад в каталог -->
                          <a href="{% url 'catalog:products_list' %}" class="btn btn-lg btn-outline-secondary">Назад в каталог</a>
-                         <!-- Кнопка редактирования продукта -->
+                         <!-- Кнопка удаления продукта -->
+                         {% if user == product.owner or perms.catalog.can_unpublish_product %}
                          <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-lg btn-danger">Удалить товар</a>
+                         {% endif %}
                          <button type="button" class="btn btn-lg btn-primary">Добавить в корзину</button>
                     </div>
                 </div>
