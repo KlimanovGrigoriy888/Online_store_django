@@ -15,7 +15,8 @@ class BootstrapErrorList(ErrorList):
         self.error_class = 'text-danger small d-block mt-1'
 
 
-class ProductForm(forms.ModelForm):
+class ProductUserForm(forms.ModelForm):
+    """Родительская форма пользователя со ВСЕМИ полями и полной валидацией."""
     # Список запретных слов объявленных во множестве
     BAD_WORDS = {'казино',
                  'криптовалюта',
@@ -29,56 +30,35 @@ class ProductForm(forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = ['name', 'purchase_price', 'description', 'category', 'picture', ]
+        # Возможно вместо fields написать exclude = ("  поле","поле") то есть написать исключаемые поля
+        fields = ['name', 'purchase_price', 'description', 'category', 'owner', 'picture']
 
     def __init__(self, *args, **kwargs):
-        super(ProductForm, self).__init__(*args, **kwargs)
+        super(ProductUserForm, self).__init__(*args, **kwargs)
 
         # Принудительно задаем класс Bootstrap для списка ошибок каждого поля
         self.error_class = BootstrapErrorList
 
-        # Настройка атрибутов виджета для поля 'first_name'
-        self.fields['name'].widget.attrs.update({
-            'class': 'form-control',  # Добавление CSS-класса для стилизации поля
-            'placeholder': 'Введите имя'  # Текст подсказки внутри поля
-        })
+        # Автоматически добавляем Bootstrap-класс 'form-control' для ВСЕХ полей
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'form-control'})
 
-        # Настройка атрибутов виджета для поля 'purchase_price'
-        self.fields['purchase_price'].widget.attrs.update({
-            'class': 'form-control',  # Добавление CSS-класса для стилизации поля
-        })
-
-        # Настройка атрибутов виджета для поля 'description'
-        self.fields['description'].widget.attrs.update({
-            'class': 'form-control',  # Добавление CSS-класса для стилизации поля
-            'placeholder': 'Введите описание продукта'  # Текст подсказки внутри поля
-        })
-
-        # Настройка атрибутов виджета для поля 'category'
-        self.fields['category'].widget.attrs.update({
-            'class': 'form-control',  # Добавление CSS-класса для стилизации поля
-            'placeholder': 'Выберите категорию продукта'  # Текст подсказки внутри поля
-        })
-
-        # Настройка атрибутов виджета для поля 'picture'
-        self.fields['picture'].widget.attrs.update({
-            'class': 'form-control',  # Добавление CSS-класса для стилизации поля
-        })
+        # Добавляем индивидуальные подсказки (placeholder)
+        self.fields['name'].widget.attrs.update({'placeholder': 'Введите имя'})
+        self.fields['description'].widget.attrs.update({'placeholder': 'Введите описание продукта'})
+        self.fields['category'].widget.attrs.update({'placeholder': 'Выберите категорию продукта'})
 
     # Метод валидации поля purchase_price, что цена продукта не может быть отрицательной.
     # Название метода должно включать название поля, иначе не работает
     def clean_purchase_price(self):
         price = self.cleaned_data.get('purchase_price')
-
         # Проверяем, что цена не отрицательная
         if price is not None and price < 0:
             raise forms.ValidationError("Цена продукта не может быть отрицательной.")
-
         return price
 
     def clean_picture(self):
         picture = self.cleaned_data.get('picture')
-
         # Если пользователь не загрузил картинку (а поле необязательное), пропускаем проверку
         if not picture:
             return picture
@@ -125,3 +105,14 @@ class ProductForm(forms.ModelForm):
                 self.add_error(field_name, forms.ValidationError(f'Текст содержит запрещенное слово {bad_word}!'))
 
         return cleaned_data
+
+
+class ProductModeratorForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['publication_status']  # Модератор видит одно поле
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.error_class = BootstrapErrorList
+        self.fields['publication_status'].widget.attrs.update({'class': 'form-control'})

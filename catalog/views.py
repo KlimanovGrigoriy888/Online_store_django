@@ -1,13 +1,13 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, HttpResponseForbidden
 from django.urls import reverse_lazy
-from django.views import View
 
-from .forms import ProductForm
+from .forms import ProductUserForm, ProductModeratorForm
 from .models import Product
 from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic import ListView, DetailView, DeleteView
+from django.views.generic import ListView, DetailView, DeleteView, View
 
 
 class ProductListView(ListView):
@@ -19,7 +19,7 @@ class ProductListView(ListView):
     context_object_name = 'products'
 
     def get_queryset(self):
-        """Здесь выводим в консоль 5 последних товаров"""
+        """Здесь выводим в консоль 5 последних товаров из БД."""
         queryset = super().get_queryset()
 
         # Получаем все отсортированные по дате создания последние 5 продуктов из класса Product для вывода в консоль
@@ -73,35 +73,83 @@ class ProductDetailView(DetailView):
 
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
-    """Класс создания продукта."""
+    """Класс создания продукта с записью пользователя при создании продукта."""
     model = Product
     # Указываем поля модели, которые будут в HTML-форме
     # fields = ['name', 'purchase_price', 'description', 'category', 'picture',]
     # Для получения данных с входной формы HTML шаблона указываем класс формы для работы через формы
-    form_class = ProductForm
+    form_class = ProductUserForm
     # Новая страница с формой
     template_name = 'catalog/product_form.html'
     # Перенаправляем пользователя после успешного создания товара
     success_url = reverse_lazy('catalog:products_list')
 
+    def form_valid(self, form):
+        """Метод записывающий текущего пользователя продукта в БД """
+        product = form.save()  # Django берет данные из формы и сохраняет в базе
+        # получаем текущего пользователя из сессии
+        user = self.request.user
+        # пишем текущего пользователя в БД как owner
+        product.owner = user
+        # сохраняем пользователя в БД
+        product.save()
+        return super().form_valid(form)
+
 
 class ProductUpdateView(LoginRequiredMixin, UpdateView):
-    """Класс обновления данных продукта."""
+    """Класс обновления данных продукта с проверкой на регистрацию пользователя и наличия права на изменение
+    статуса публикации товара."""
     model = Product
     # Указываем поля модели, которые будут в HTML-форме
     # fields = ['name', 'purchase_price', 'description', 'category', 'picture']
     # Для получения данных с входной формы HTML шаблона указываем класс формы для работы через формы
-    form_class = ProductForm
+    form_class = ProductUserForm
     # Новая страница с формой
     template_name = 'catalog/product_form.html'
     # Перенаправляем пользователя после успешного создания товара
     success_url = reverse_lazy('catalog:products_list')
 
+    def get_form_class(self):
+        """Функция изменения формы на форму модератора при наличии прав модератора или создателя продукта"""
+        #  Получаем данные пользователя из текущей сессии
+        user = self.request.user
+        # Если пользователь владелец (создатель) продукта (получено из формы), возвращаем стандартную форму
+        if user == self.object.owner:
+            return ProductUserForm
 
-class ProductDeleteView(LoginRequiredMixin, DeleteView):
-    """Класс просмотра удаления продукта."""
+        # Если зашел модератор (проверяем его право) — даем форму только для статуса
+        if user.has_perm('catalog.can_unpublish_product'):
+            # Возвращаем форму модератора
+            return ProductModeratorForm
+
+        # Если зашел чужой пользователь — доступ запрещен
+        raise PermissionDenied
+
+
+class ProductDeleteView(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    """Класс просмотра удаления продукта с проверкой на регистрацию пользователя и наличия права разрешения на
+    удаления продукта."""
     model = Product
     # Новая страница с формой
     template_name = 'catalog/product_confirm_delete.html'
     # Перенаправляем пользователя после успешного удаления товара
     success_url = reverse_lazy('catalog:products_list')
+    # Проверка наличия разрешения на удаление продукта
+    # permission_required = 'catalog.delete_product' удалили так как сделали доп проверку на owner-создателя продукта
+
+    def dispatch(self, request, *args, **kwargs):
+        """Функция проверки, что пользователь создатель продукта и имеет права на удаление продукта """
+        # Получаем данные продукта из БД
+        product = self.get_object()
+        # Получаем данные о текущем пользователе из текущей сессии
+        user = request.user
+        # Проверка, что пользователь владелец продукта и имеет права на удаление продукта
+        is_owner = (user == product.owner)
+        is_moderator = user.has_perm('catalog.delete_product')
+
+        # Если НЕ владелец и НЕ модератор — закрываем доступ
+        if not (is_owner or is_moderator):
+            raise PermissionDenied
+
+        return super().dispatch(request, *args, **kwargs)
+
