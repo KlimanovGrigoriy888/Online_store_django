@@ -154,10 +154,10 @@ AUTH_USER_MODEL = 'users.CustomUser'
 
 # Настройка почтового сервера
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_PORT = 465
-EMAIL_USE_TLS = False
-EMAIL_USE_SSL = True
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+EMAIL_USE_SSL = os.getenv('EMAIL_USE_SSL')
 EMAIL_HOST_USER = os.getenv('YOUR_EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('YOUR_EMAIL_HOST_PASSWORD')
 
@@ -168,3 +168,17 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # Указываем путь перенаправления если пользователь не авторизован, при подключении через контроллер использующий
 # миксин LoginRequiredMixin
 LOGIN_URL = 'users:login'
+
+# Настройка кеширования от Redis
+CACHE_ENABLED = True #  Включение Redis в проекте
+if CACHE_ENABLED:
+    CACHES = {
+        'default':{
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': os.getenv('LOCATION'),
+            "OPTIONS": {
+                # Принудительно переключаем на старую стабильную версию протокола так как не смог обновить redis
+                "protocol": 2,
+            }
+        }
+    }

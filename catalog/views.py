@@ -1,13 +1,42 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.core.cache import cache
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden
 from django.urls import reverse_lazy
+from unicodedata import category
 
 from .forms import ProductUserForm, ProductModeratorForm
-from .models import Product
+from .models import Product, Category
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic import ListView, DetailView, DeleteView, View
+
+from .service import ProductService
+
+
+class ProductsByCategoryListView(ListView):
+    """Представление для отображения продуктов конкретной категории."""
+    model = Product
+    template_name = 'catalog/products_by_category.html'  # Отдельный шаблон
+    context_object_name = 'products' # Имя переменной со списком товаров в шаблоне
+
+    def get_queryset(self):
+        """Метод с помощью которого фильтруем продукты по category_id категории продукта"""
+        # Извлекаем id категории из URL-адреса страницы (например, /category/3/)
+        category_id = self.kwargs.get('category_id')
+
+        # Вызываем сервисную функцию получения продуктов по id категории
+        return ProductService.get_products_by_category(category_id)
+
+    def get_context_data(self, **kwargs):
+        """Добавляем саму категорию в контекст, чтобы вывести её название в заголовке."""
+        context = super().get_context_data(**kwargs)
+        category_id = self.kwargs.get('category_id')
+
+        # Находим объект категории, чтобы в HTML написать "Товары категории Электроника"
+        context['current_category'] = Category.objects.get(id=category_id)
+        return context
+
 
 
 class ProductListView(ListView):
@@ -20,7 +49,15 @@ class ProductListView(ListView):
 
     def get_queryset(self):
         """Здесь выводим в консоль 5 последних товаров из БД."""
-        queryset = super().get_queryset()
+        # Пытаемся достать данные из кэша
+        queryset = cache.get("products_queryset")
+        #  Если в кэше ничего нет — берем из БД
+        if not queryset:
+            # Оборачиваем в list(), чтобы Django выполнил запрос к БД
+            # и сохранил в переменную реальный список объектов, а не ленивый QuerySet
+            queryset = list(super().get_queryset())
+            # Сохраняем чистый список объектов в кэш на 15 минут
+            cache.set("products_queryset", queryset, 60*15) # Кешируем данные на 15 минут
 
         # Получаем все отсортированные по дате создания последние 5 продуктов из класса Product для вывода в консоль
         latest_products = Product.objects.order_by('-created_at')[:5]

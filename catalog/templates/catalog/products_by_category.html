@@ -1,0 +1,50 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}Продукты категории {{ current_category.name }}{% endblock %}
+
+{% block content %}
+{% include 'catalog/header.html' %}
+
+<div class="container mt-4">
+    <div class="p-4 mb-4 bg-light rounded shadow-sm">
+        <span class="badge bg-secondary mb-2">ID категории: {{current_category.id}}</span>
+        <h2 class="my-0 font-weight-normal">Категория: "{{current_category.name}}"</h2>
+    </div>
+    <a href="{% url 'catalog:products_list' %}" class="btn btn-sm btn-outline-secondary mb-4">&larr; Назад в каталог</a>
+
+    <div class="row text-center">
+        {% for product in products %}
+        <div class="col-4">
+            <div class="card mb-4 box-shadow">
+                <div class="card-header">
+                    <h4 class="my-0 font-weight-normal">{{ product.name }}</h4>
+                </div>
+                <div class="card-body">
+                    <!--h1 class="card-title pricing-card-title">$ 140</h1>-->
+                    <ul class="list-unstyled mt-12 mb-4 text-start m-3">
+                        <li>Название продукта: {{product.name}}</li>
+                        <li>Описание продукта: {{product.description|truncatechars:100}}</li>
+                        <li>Цена: {{product.purchase_price }}</li>
+                        {% if product.picture %}
+                        <img src="{{ product.picture.url }}" class="img-fluid rounded" alt="{{ product.name }}"
+                             style="max-height: 200px;">
+                        {% else %}
+                        <p class="text-muted">Нет изображения</p>
+                        {% endif %}
+                    </ul>
+                    <a href="{% url 'catalog:product_detail' pk=product.id %}"
+                       class="btn btn-lg btn-block btn-outline-primary">Купить</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <!-- Если сервисная функция вернула пустой список, показываем это сообщение -->
+        <div class="col-12">
+            <div class="alert alert-info text-center py-4" role="alert">
+                В категории "{{current_category.name}}" пока нет товаров.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
