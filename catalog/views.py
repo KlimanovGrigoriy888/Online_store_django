@@ -20,7 +20,7 @@ class ProductsByCategoryListView(ListView):
     template_name = 'catalog/products_by_category.html'  # Отдельный шаблон
     context_object_name = 'products' # Имя переменной со списком товаров в шаблоне
 
-    def get_queryset(self):
+    def get_queryset(self):  # Получаем данные из БД
         """Метод с помощью которого фильтруем продукты по category_id категории продукта"""
         # Извлекаем id категории из URL-адреса страницы (например, /category/3/)
         category_id = self.kwargs.get('category_id')
